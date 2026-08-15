@@ -1,46 +1,81 @@
 import { describe, it, expect } from 'vitest';
+import { TOOL_DEFINITIONS } from '../src/tool.definitions.js';
 
 describe('Unitrends MCP Server', () => {
   describe('Tool Definitions', () => {
-    const expectedTools = [
-      'unitrends_list_appliances',
-      'unitrends_get_appliance',
-      'unitrends_list_assets',
-      'unitrends_get_asset',
-      'unitrends_list_running_jobs',
-      'unitrends_list_job_history',
-      'unitrends_list_recovery_points',
-      'unitrends_queue_restore',
-      'unitrends_get_restore_status',
-      'unitrends_list_alerts',
-      'unitrends_get_success_rate',
-    ];
-
-    it('should define all 11 tools', () => {
-      expect(expectedTools).toHaveLength(11);
+    it('defines exactly the 11 expected tools', () => {
+      const names = TOOL_DEFINITIONS.map((t) => t.name);
+      expect(names).toEqual([
+        'unitrends_list_appliances',
+        'unitrends_get_appliance',
+        'unitrends_list_assets',
+        'unitrends_get_asset',
+        'unitrends_list_running_jobs',
+        'unitrends_list_job_history',
+        'unitrends_list_recovery_points',
+        'unitrends_queue_restore',
+        'unitrends_get_restore_status',
+        'unitrends_list_alerts',
+        'unitrends_get_success_rate',
+      ]);
     });
 
-    it('should include appliance + asset tools', () => {
-      expect(expectedTools).toContain('unitrends_list_appliances');
-      expect(expectedTools).toContain('unitrends_get_appliance');
-      expect(expectedTools).toContain('unitrends_list_assets');
-      expect(expectedTools).toContain('unitrends_get_asset');
+    it('every tool has a non-empty description', () => {
+      for (const tool of TOOL_DEFINITIONS) {
+        expect(tool.description, `${tool.name} description`).toBeTruthy();
+      }
     });
 
-    it('should include job tools', () => {
-      expect(expectedTools).toContain('unitrends_list_running_jobs');
-      expect(expectedTools).toContain('unitrends_list_job_history');
+    it('unitrends_get_appliance requires applianceId', () => {
+      const tool = TOOL_DEFINITIONS.find((t) => t.name === 'unitrends_get_appliance');
+      expect(tool?.inputSchema.required).toEqual(['applianceId']);
     });
 
-    it('should include recovery and restore tools', () => {
-      expect(expectedTools).toContain('unitrends_list_recovery_points');
-      expect(expectedTools).toContain('unitrends_queue_restore');
-      expect(expectedTools).toContain('unitrends_get_restore_status');
+    it('unitrends_get_asset requires applianceId and assetId', () => {
+      const tool = TOOL_DEFINITIONS.find((t) => t.name === 'unitrends_get_asset');
+      expect(tool?.inputSchema.required).toEqual(['applianceId', 'assetId']);
     });
 
-    it('should include alerts and reporting tools', () => {
-      expect(expectedTools).toContain('unitrends_list_alerts');
-      expect(expectedTools).toContain('unitrends_get_success_rate');
+    it('unitrends_list_recovery_points requires assetId', () => {
+      const tool = TOOL_DEFINITIONS.find((t) => t.name === 'unitrends_list_recovery_points');
+      expect(tool?.inputSchema.required).toEqual(['assetId']);
+    });
+
+    it('unitrends_queue_restore requires recoveryPointId', () => {
+      const tool = TOOL_DEFINITIONS.find((t) => t.name === 'unitrends_queue_restore');
+      expect(tool?.inputSchema.required).toEqual(['recoveryPointId']);
+    });
+
+    it('unitrends_get_restore_status requires restoreId', () => {
+      const tool = TOOL_DEFINITIONS.find((t) => t.name === 'unitrends_get_restore_status');
+      expect(tool?.inputSchema.required).toEqual(['restoreId']);
+    });
+
+    it('unitrends_list_assets, unitrends_list_job_history, and unitrends_get_success_rate take no required fields', () => {
+      for (const name of [
+        'unitrends_list_assets',
+        'unitrends_list_job_history',
+        'unitrends_get_success_rate',
+      ]) {
+        const tool = TOOL_DEFINITIONS.find((t) => t.name === name);
+        expect(tool?.inputSchema.required ?? [], name).toEqual([]);
+      }
+    });
+
+    it('unitrends_list_appliances, unitrends_list_running_jobs, and unitrends_list_alerts take no required fields', () => {
+      for (const name of [
+        'unitrends_list_appliances',
+        'unitrends_list_running_jobs',
+        'unitrends_list_alerts',
+      ]) {
+        const tool = TOOL_DEFINITIONS.find((t) => t.name === name);
+        expect(tool?.inputSchema.required ?? [], name).toEqual([]);
+      }
+    });
+
+    it('only unitrends_get_appliance advertises MCP Apps UI metadata', () => {
+      const withMeta = TOOL_DEFINITIONS.filter((t) => t._meta);
+      expect(withMeta.map((t) => t.name)).toEqual(['unitrends_get_appliance']);
     });
   });
 
