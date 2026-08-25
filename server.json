@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.wyre-technology/unitrends-mcp",
+  "name": "io.github.WYRE-AI/unitrends-mcp",
   "title": "Unitrends Backup",
   "description": "MCP server for Unitrends Backup — appliances, jobs, recovery points, restores, alerts.",
   "repository": {
-    "url": "https://github.com/wyre-technology/unitrends-mcp",
+    "url": "https://github.com/WYRE-AI/unitrends-mcp",
     "source": "github"
   },
   "version": "0.0.0",
-  "websiteUrl": "https://github.com/wyre-technology/unitrends-mcp",
+  "websiteUrl": "https://github.com/WYRE-AI/unitrends-mcp",
   "packages": [
     {
       "registryType": "oci",
-      "identifier": "ghcr.io/wyre-technology/unitrends-mcp:0.0.0",
+      "identifier": "ghcr.io/wyre-ai/unitrends-mcp:0.0.0",
       "transport": {
         "type": "stdio"
       },
