@@ -1,0 +1,26 @@
+services:
+  # Gateway mode. Base URL, username, and password arrive per request on
+  # X-Unitrends-* headers. Do not set UNITRENDS_BASE_URL, UNITRENDS_USERNAME,
+  # UNITRENDS_PASSWORD, or env_file here — that would put static vendor
+  # credentials in the container. The project .env is used only for Compose
+  # interpolation of CONDUIT_S2S_SECRET. For AUTH_MODE=env, pass UNITRENDS_*
+  # on that process instead (see the README).
+  unitrends-mcp:
+    build: .
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - MCP_TRANSPORT=http
+      - MCP_HTTP_PORT=8080
+      # Inside the container. Host publish above is loopback. Honored only
+      # because CONDUIT_S2S_SECRET is required. The insecure-dev bypass ignores
+      # this address and listens on 127.0.0.1.
+      - MCP_HTTP_HOST=0.0.0.0
+      - AUTH_MODE=gateway
+      - CONDUIT_S2S_SECRET=${CONDUIT_S2S_SECRET:?set CONDUIT_S2S_SECRET}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
